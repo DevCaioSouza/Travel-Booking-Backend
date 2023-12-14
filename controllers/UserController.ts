@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
+
 import { Request } from 'express';
 import { Response } from 'express';
 
@@ -39,13 +41,38 @@ module.exports = class UserController {
     }
 
     //check if user exists
-
     const userExists = await User.findOne({ email: email });
 
     if (userExists) {
-      res.status(422).json({ message: 'Email já cadastrado' });
+      res.status(409).json({ message: 'Email já cadastrado' });
+      return;
     }
 
-    return res.json("Tudo certo.")
+    //criar senha hasheada
+    const salt = await bcrypt.genSalt(12); //gerar salt de 12 chars adicionais p/ dificultar +
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    //  ## CRIAR USER!!
+    //quando o nome da variável é igual ao da propriedade, não precisa atribuir valor
+    //ex: {name: name} = {name}
+    const user = new User({
+      name,
+      email,
+      phone,
+      password: passwordHash,
+    });
+
+    try {
+      const newUser = await user.save();
+      res.status(201).json({
+        message: 'Usuário criado.',
+        newUser,
+      });
+    } catch (err) {
+      // res.status(500).json({ message: err });
+      console.log(err);
+    }
+
+    // return res.json("Tudo certo.")
   }
 };
