@@ -1,6 +1,10 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+//helpers
 const createUserToken = require('../helpers/create-user-token');
+const getToken = require('../helpers/get-token');
 
 import { Request } from 'express';
 import { Response } from 'express';
@@ -72,7 +76,7 @@ module.exports = class UserController {
     }
   }
 
-  static async login(req: any, res: any) {
+  static async login(req: Request, res: Response) {
     const { email, password } = req.body;
 
     if (!email) {
@@ -100,5 +104,38 @@ module.exports = class UserController {
     }
 
     await createUserToken(user, req, res);
+  }
+
+  static async checkUser(req: Request, res: Response) {
+    let currentUser;
+
+    console.log(req.headers.authorization);
+
+    if (req.headers.authorization) {
+      const token = getToken(req);
+      const decoded = jwt.verify(token, 'nosso-secret');
+
+      currentUser = await User.findById(decoded.id);
+
+      currentUser.password = undefined; //para remover a senha do retorno
+      console.log(decoded);
+    } else {
+      currentUser = null;
+    }
+
+    res.status(200).send(currentUser);
+  }
+
+  static async getUserById(req: Request, res: Response) {
+    const id: string = req.params.id;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      res.status(422).json({ message: 'Usuário não encontrado no sistema.' });
+      return;
+    }
+
+    res.status(200).json({ user });
   }
 };
