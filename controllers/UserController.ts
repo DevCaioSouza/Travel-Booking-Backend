@@ -129,13 +129,13 @@ module.exports = class UserController {
   static async getUserById(req: Request, res: Response) {
     const id: string = req.params.id;
 
-    const user = await User.findById(id);
-
-    if (!user) {
-      res.status(422).json({ message: 'Usuário não encontrado no sistema.' });
-      return;
+    try {
+      const user = await User.findById(id);
+      res.status(200).json({ user });
+    } catch (err) {
+      return res
+        .status(422)
+        .json({ message: 'Usuário não encontrado no sistema.' });
     }
-
-    res.status(200).json({ user });
   }
 };
