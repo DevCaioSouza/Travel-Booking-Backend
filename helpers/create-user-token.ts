@@ -18,4 +18,6 @@ const createUserToken = async (user: any, req: any, res: any) => {
   });
 };
 
+export {};
+
 module.exports = createUserToken;

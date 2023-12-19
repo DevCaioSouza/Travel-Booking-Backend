@@ -1,5 +1,6 @@
 import { Request } from 'express';
 
+//essa função recebe a requisição como parâmetro e extrai o token nela contido
 const getToken = (req: Request) => {
   const authHeader = req.headers.authorization;
 

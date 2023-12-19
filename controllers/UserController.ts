@@ -138,4 +138,11 @@ module.exports = class UserController {
         .json({ message: 'Usuário não encontrado no sistema.' });
     }
   }
+
+  static async editUser(req: Request, res: Response) {
+    res.status(200).json({
+      message: 'Update realizado com sucesso.',
+    });
+    return;
+  }
 };
