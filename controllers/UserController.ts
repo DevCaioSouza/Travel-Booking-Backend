@@ -11,7 +11,7 @@ import { Response } from 'express';
 
 module.exports = class UserController {
   static async register(req: Request, res: Response) {
-    const { name, email, phone, password, confirmpassword } = req.body;
+    const { name, email, phone, password, confirmPassword } = req.body;
 
     // validations
     if (!name) {
@@ -34,12 +34,12 @@ module.exports = class UserController {
       return;
     }
 
-    if (!confirmpassword) {
+    if (!confirmPassword) {
       res.status(422).json({ message: 'A confirmação de senha é obrigatória' });
       return;
     }
 
-    if (password !== confirmpassword) {
+    if (password !== confirmPassword) {
       res
         .status(422)
         .json({ message: 'A confirmação de senha está incorreta.' });
